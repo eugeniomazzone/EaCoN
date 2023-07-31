@@ -2032,7 +2032,7 @@ Annotate <- function(data = NULL, refGene.table = NULL, targets.table = NULL, re
   # source("/home/job/git_gustaveroussy/EaCoN/R/mini_functions.R")
   # source("/home/job/git_gustaveroussy/EaCoN/R/plot_functions.R")
   # require(foreach)
-
+  
   oridir <- getwd()
 
   `%do%` <- foreach::"%do%"
@@ -2046,6 +2046,19 @@ Annotate <- function(data = NULL, refGene.table = NULL, targets.table = NULL, re
   genome <- data$meta$basic$genome
   manufacturer <- data$meta$basic$manufacturer
   source <- data$meta$basic$source
+
+  genome.pkg <- data$meta$basic$genome.pkg
+  if (!genome.pkg %in% BSgenome::installed.genomes()) {
+    if (genome.pkg %in% BSgenome::available.genomes()) {
+      stop(tmsg(paste0("BSgenome ", genome.pkg, " available but not installed. Please install it !")), call. = FALSE)
+    } else {
+      stop(tmsg(paste0("BSgenome ", genome.pkg, " not available in valid BSgenomes and not installed ... Please check your genome name or install your custom BSgenome !")), call. = FALSE)
+    }
+  }
+  tmsg(paste0("Loading ", genome.pkg, " ..."))
+  suppressPackageStartupMessages(require(genome.pkg, character.only = TRUE))
+  BSg.obj <- getExportedValue(genome.pkg, genome.pkg)
+  cs <- chromobjector(BSg.obj)
 
   tmsg("Loading genome data ...")
   ## No refGene provided ...
