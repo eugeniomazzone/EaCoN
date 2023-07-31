@@ -2197,11 +2197,12 @@ Annotate <- function(data = NULL, refGene.table = NULL, targets.table = NULL, re
 
   tmsg("Building Truncated table ...")
   # gen.trunk.idx <- which(gen.df$chrN == cbsNC.df$Chr & gen.df$start < cbsNC.df$End & gen.df & gen.df$end > cbsNC.df$Start)
+  if (exists("gen.df")) {
   gen.trunk.idx.list <- sapply(1:nrow(gen.df), function(g) {
     gidx <- which(cbsNC.df$Chr == gen.df$chrN[g] & ((cbsNC.df$Start > gen.df$start[g] & cbsNC.df$Start < gen.df$end[g]) | (cbsNC.df$End > gen.df$start[g] & cbsNC.df$End < gen.df$end[g])))
     return(length(gidx))
     # if(length(gen.trunk.idx) > 0) return(gidx) else return(NULL)
-  })
+  })}
   gen.trunk.idx <- which(gen.trunk.idx.list > 1)
   if (length(gen.trunk.idx) > 0) {
     gen.trunk <- gen.df[gen.trunk.idx,]
